@@ -142,9 +142,9 @@ export const getChanged = (packages: PackageJson[], opts: Options) => {
     }
 
     // Bail when the "build" script is empty or it executes
-    // the "bic" or "build-if-changed" command.
+    // the "bic" command.
     const script = pkg.scripts && pkg.scripts.build
-    if (!script || /\b(bic|build-if-changed)\b/.test(script)) {
+    if (!script || /\b(bic)\b/.test(script)) {
       return null
     }
 

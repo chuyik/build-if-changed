@@ -1,12 +1,11 @@
 {
-  "name": "build-if-changed",
+  "name": "@chuyik/build-if-changed",
   "version": "1.5.5",
   "description": "Run build scripts only when files changed",
   "license": "MIT",
   "main": "lib/index.js",
   "bin": {
-    "bic": "bin/cli.js",
-    "build-if-changed": "bin/cli.js"
+    "bic": "bin/cli.js"
   },
   "files": [
     "bin",

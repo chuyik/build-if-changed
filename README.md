@@ -40,8 +40,6 @@ yarn add build-if-changed -D
 3. Use the package:
 
 ```sh
-yarn build-if-changed
-# or
 yarn bic
 ```
 
@@ -51,5 +49,4 @@ yarn bic
 
 - The `skip` config takes precedence over the `only` config.
 - The `.git` and `node_modules` directories are always skipped.
-- Any package with `bic` or `build-if-changed` in its "build" script is skipped.
 - This tool uses a custom glob syntax ([see here](https://www.npmjs.com/package/recrawl#pattern-syntax)).
