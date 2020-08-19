@@ -13,8 +13,10 @@
     "help.txt"
   ],
   "scripts": {
+    "dev": "tsc -p . -w",
     "build": "tsc -p .",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "release": "yarn build && git push --follow-tags origin master && npm publish --registry=https://registry.npmjs.org/"
   },
   "dependencies": {
     "ansi-256-colors": "^1.1.0",
