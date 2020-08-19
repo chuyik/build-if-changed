@@ -30,7 +30,7 @@ yarn add build-if-changed -D
 
 ```js
 // Only watch the "src" directory:
-"bic": ["src"],
+"bic": ["src/**"],
 // Any glob can be included or excluded:
 "bic": { "only": [], "skip": [] },
 // Disable bic for a package:
@@ -41,6 +41,9 @@ yarn add build-if-changed -D
 
 ```sh
 yarn bic
+yarn bic --help
+yarn bic --dir some-dir
+yarn bic --ignore some-name
 ```
 
 &nbsp;

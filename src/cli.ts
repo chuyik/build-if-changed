@@ -23,7 +23,7 @@ exports.run = async (opts: CLIOptions = {} as any) => {
   }
 
   if (opts.cwd == null) {
-    opts.cwd = process.cwd()
+    opts.cwd = opts.dir || process.cwd()
   }
 
   const filter = opts.filter

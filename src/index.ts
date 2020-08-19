@@ -15,9 +15,11 @@ export type Cache = { [key: string]: [number, string] }
 /** These options are shared between all exports */
 export type Options = {
   cwd: string
+  dir?: string
   skip?: string[]
   filter?: (file: string, name?: string) => boolean
   force?: boolean
+  ignore?: string
 }
 
 /** "bic" config from "package.json" */
@@ -75,6 +77,9 @@ export const loadPackages = (
         config.root = pkg
         if (!config.name) {
           config.name = basename(pkg)
+        }
+        if (opts.ignore && new RegExp(opts.ignore).test(config.name)) {
+          return
         }
         return config
       } catch {
@@ -144,7 +149,7 @@ export const getChanged = (packages: PackageJson[], opts: Options) => {
     // Bail when the "build" script is empty or it executes
     // the "bic" command.
     const script = pkg.scripts && pkg.scripts.build
-    if (!script || /\b(bic)\b/.test(script)) {
+    if (!script || (/\b(bic)\b/.test(script) && !opts.dir)) {
       return null
     }
 
