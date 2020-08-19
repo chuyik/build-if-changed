@@ -1,6 +1,6 @@
 {
-  "name": "@chuyik/build-if-changed",
-  "version": "1.5.5",
+  "name": "@o2team/build-if-changed",
+  "version": "1.5.6",
   "description": "Run build scripts only when files changed",
   "license": "MIT",
   "main": "lib/index.js",
@@ -16,7 +16,7 @@
     "dev": "tsc -p . -w",
     "build": "tsc -p .",
     "prepublishOnly": "yarn build",
-    "release": "yarn build && git push --follow-tags origin master && npm publish --registry=https://registry.npmjs.org/"
+    "release": "git push --follow-tags origin master && npm publish --registry=http://registry.m.jd.com"
   },
   "dependencies": {
     "ansi-256-colors": "^1.1.0",
