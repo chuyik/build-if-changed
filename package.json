@@ -1,5 +1,5 @@
 {
-  "name": "@o2team/build-if-changed",
+  "name": "@chuyik/build-if-changed",
   "version": "1.5.7",
   "description": "Run build scripts only when files changed",
   "license": "MIT",
@@ -9,14 +9,14 @@
   },
   "files": [
     "bin",
-    "lib",
-    "help.txt"
+    "lib"
   ],
+  "private": false,
   "scripts": {
     "dev": "tsc -p . -w",
     "build": "tsc -p .",
     "prepublishOnly": "yarn build",
-    "release": "git push --follow-tags origin master && npm publish --registry=http://registry.m.jd.com"
+    "release": "git push --follow-tags origin master && npm publish --registry=https://registry.npmjs.org/ --access=public"
   },
   "dependencies": {
     "ansi-256-colors": "^1.1.0",
