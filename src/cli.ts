@@ -8,7 +8,7 @@ import {
 import { GitIgnore } from './gitignore'
 import { resolve } from 'path'
 import createLog from './log'
-import fs = require('saxon/sync')
+import { readFileSync } from 'fs'
 
 interface CLIOptions extends Options {
   help?: boolean
@@ -18,7 +18,9 @@ exports.run = async (opts: CLIOptions = {} as any) => {
   const log = createLog(opts)
 
   if (opts.help) {
-    log(fs.read(resolve(__dirname, '..', 'help.txt')))
+    log(
+      readFileSync(resolve(__dirname, '..', 'help.txt'), { encoding: 'utf8' })
+    )
     process.exit()
   }
 

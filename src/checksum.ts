@@ -1,13 +1,13 @@
-import * as crypto from 'crypto'
-import * as fs from 'fs'
+import { createHash } from 'crypto'
+import { createReadStream } from 'fs'
 
 export default (filename: string, opts: any = {}) => {
   const { algorithm = 'sha1', encoding = 'hex' } = opts
 
-  const hash = crypto.createHash(algorithm)
+  const hash = createHash(algorithm)
   hash.setEncoding(encoding)
 
-  const fileStream = fs.createReadStream(filename)
+  const fileStream = createReadStream(filename)
   fileStream.pipe(
     hash,
     { end: false }

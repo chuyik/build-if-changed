@@ -8,6 +8,7 @@ program
   .option('-i, --ignore <string>', '忽略某个项目，支持正则')
   .option('-s, --slient', '安静模式')
   .option('-f, --force', '强制运行')
+  .option('--cachePath <string>', '自定义缓存路径')
   .action(function(cmd, env) {
     const opts = program.opts()
     if (opts.dir && !opts.dir.startsWith('/')) {

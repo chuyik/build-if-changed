@@ -1,10 +1,12 @@
 import { basename, dirname, join, relative, isAbsolute } from 'path'
 import { createMatcher, GlobMatcher } from 'recrawl'
-import fs = require('saxon/sync')
-import * as os from 'os'
+import { readFileSync } from 'fs'
+import { homedir } from 'os'
+import { isDir, isFile } from './util'
 
-const readLines = path => fs.read(path).split(/\r?\n/)
-const isHomeDir = path => path === '/' || path === os.homedir()
+const readLines = path =>
+  readFileSync(path, { encoding: 'utf8' }).split(/\r?\n/)
+const isHomeDir = path => path === '/' || path === homedir()
 
 export class GitIgnore {
   readonly matchRootGlobs: GlobMatcher | null
@@ -39,7 +41,7 @@ export class GitIgnore {
           if (match(file, name)) {
             return true
           }
-        } else if (fs.isFile(path)) {
+        } else if (isFile(path)) {
           const lines = readLines(path).filter(line => line && line[0] !== '#')
           match = createMatcher(lines, glob => join(dir, glob))
           this.globTree[pathId] = match || false
@@ -52,7 +54,7 @@ export class GitIgnore {
       }
 
       // Never use .gitignore outside the git repository.
-      if (fs.isDir(join(dir, '.git'))) {
+      if (isDir(join(dir, '.git'))) {
         break
       }
     }

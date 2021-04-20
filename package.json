@@ -21,8 +21,7 @@
   "dependencies": {
     "ansi-256-colors": "^1.1.0",
     "commander": "^6.0.0",
-    "recrawl": "^1.1.1",
-    "saxon": "^0.1.15"
+    "recrawl": "^1.1.1"
   },
   "husky": {
     "hooks": {

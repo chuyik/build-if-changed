@@ -1,9 +1,10 @@
-import { join, resolve, basename, dirname, isAbsolute } from 'path'
+import { join, resolve, basename, dirname, isAbsolute, parse } from 'path'
 import { crawl, GlobMatcher } from 'recrawl'
-import fs = require('saxon/sync')
+import { lstatSync, mkdirSync, writeFileSync } from 'fs'
 import spawn from './spawn'
 import checksum from './checksum'
 import createLog from './log'
+import { isDir, isFile, readJson } from './util'
 
 const PKG_JSON = 'package.json'
 const CACHE_NAME = '.bic_cache'
@@ -20,6 +21,7 @@ export type Options = {
   filter?: (file: string, name?: string) => boolean
   force?: boolean
   ignore?: string
+  cachePath?: string
 }
 
 /** "bic" config from "package.json" */
@@ -68,12 +70,12 @@ export const loadPackages = (
         pkg = dirname(pkg)
       }
       const configPath = join(pkg, PKG_JSON)
-      if (!fs.isFile(configPath)) {
+      if (!isFile(configPath)) {
         log.warn('Package has no "%s" module:\n  %O', PKG_JSON, pkg)
         return
       }
       try {
-        const config = fs.readJson(configPath)
+        const config = readJson(configPath)
         config.root = pkg
         if (!config.name) {
           config.name = basename(pkg)
@@ -122,7 +124,7 @@ export const buildPackages = async (packages: PackageJson[], opts: Options) => {
         procs.delete(proc)
         // Update the cache only if the build succeeds.
         if (code === 0) {
-          fs.write(join(pkg.root, CACHE_NAME), JSON.stringify(pkg.cache))
+          updateCache(pkg, opts)
           resolve()
         } else {
           reject(new Error('Build failed: ' + pkg.root))
@@ -136,7 +138,35 @@ export const buildPackages = async (packages: PackageJson[], opts: Options) => {
   })
 }
 
-export const getChanged = (packages: PackageJson[], opts: Options) => {
+function getCachePath(pkg: PackageJson, opts: Options): string {
+  if (opts.cachePath) {
+    if (!opts.cachePath.startsWith('/')) {
+      opts.cachePath = join(opts.cwd, opts.cachePath)
+    }
+    return opts.cachePath.replace(
+      '{{name}}',
+      pkg.name.replace(/[^\w\d-]/g, '_')
+    )
+  }
+  return join(pkg.root, CACHE_NAME)
+}
+
+export const updateCache = (pkg: PackageJson, opts: Options) => {
+  const cachePath = getCachePath(pkg, opts)
+  const cacheDir = parse(cachePath).dir
+  if (!isDir(cacheDir)) {
+    mkdirSync(cacheDir, { recursive: true })
+  }
+  return writeFileSync(cachePath, JSON.stringify(pkg.cache))
+}
+
+export const getChanged = (
+  packages: PackageJson | PackageJson[],
+  opts: Options
+) => {
+  if (!Array.isArray(packages)) {
+    packages = [packages]
+  }
   const promises = packages.map(async pkg => {
     let config = pkg.bic == null ? {} : pkg.bic
     if (config === false) {
@@ -166,8 +196,8 @@ export const getChanged = (packages: PackageJson[], opts: Options) => {
       filter,
     })
 
-    const cachePath = join(pkg.root, CACHE_NAME)
-    const cache: Cache = fs.isFile(cachePath) ? fs.readJson(cachePath) : {}
+    const cachePath = getCachePath(pkg, opts)
+    const cache: Cache = isFile(cachePath) ? readJson(cachePath) : {}
 
     // Track changed paths for easier debugging.
     const changed: string[] = []
@@ -184,7 +214,7 @@ export const getChanged = (packages: PackageJson[], opts: Options) => {
       files.map(async name => {
         const path = join(pkg.root, name)
         const prev = cache[name] || [0, '']
-        const mtime = Number(fs.stat(path).mtime)
+        const mtime = Number(lstatSync(path).mtime)
         if (mtime !== prev[0]) {
           const hash = await checksum(path)
           if (hash !== prev[1]) {
@@ -256,7 +286,7 @@ function getLines(data: string) {
 }
 
 function getRunner(root: string) {
-  return fs.isFile(join(root, 'package-lock.json')) ? 'npm' : 'yarn'
+  return isFile(join(root, 'package-lock.json')) ? 'npm' : 'yarn'
 }
 
 type Falsy = null | undefined | false | 0 | ''
