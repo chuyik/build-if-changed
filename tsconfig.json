@@ -6,8 +6,8 @@
     "moduleResolution": "node",
     "strict": true,
     "noImplicitAny": false,
+    "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "allowJs": true,
     "outDir": "lib"
   }
 }
